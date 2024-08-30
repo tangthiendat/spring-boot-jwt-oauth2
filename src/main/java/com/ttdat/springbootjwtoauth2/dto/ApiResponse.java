@@ -4,20 +4,14 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-
-import java.util.Set;
-import java.util.UUID;
-
 @Data
 @Builder
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class UserDTO {
-    UUID userId;
-    String fullName;
-    String email;
-    String password;
-    Set<RoleDTO> roles;
+public class ApiResponse <T>{
+    int status;
+    String message;
+    T data;
 }
