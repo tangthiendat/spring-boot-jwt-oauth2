@@ -11,5 +11,5 @@ spring:
 application:
   security:
     rsa:
-      rsa-public-key: classpath:certs/publicKey.pem
-      rsa-private-key: classpath:certs/privateKey.pem
+      rsa-public-key: classpath:certs/public-key.pem
+      rsa-private-key: classpath:certs/private-key.pem

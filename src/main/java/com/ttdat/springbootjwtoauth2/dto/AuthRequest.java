@@ -10,7 +10,7 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class RoleDTO {
-    Integer roleId;
-    String roleName;
+public class AuthRequest {
+    String email;
+    String password;
 }

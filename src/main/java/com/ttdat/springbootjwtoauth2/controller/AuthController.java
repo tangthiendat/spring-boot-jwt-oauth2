@@ -1,6 +1,8 @@
 package com.ttdat.springbootjwtoauth2.controller;
 
 import com.ttdat.springbootjwtoauth2.dto.ApiResponse;
+import com.ttdat.springbootjwtoauth2.dto.AuthRequest;
+import com.ttdat.springbootjwtoauth2.dto.AuthResponse;
 import com.ttdat.springbootjwtoauth2.dto.UserDTO;
 import com.ttdat.springbootjwtoauth2.service.AuthService;
 import lombok.AccessLevel;
@@ -25,6 +27,14 @@ public class AuthController {
         return ApiResponse.<UserDTO>builder()
                 .status(HttpStatus.CREATED.value())
                 .data(authService.register(userDTO))
+                .build();
+    }
+
+    @PostMapping("/login")
+    public ApiResponse<AuthResponse> login(@RequestBody AuthRequest authRequest) {
+        return ApiResponse.<AuthResponse>builder()
+                .status(HttpStatus.OK.value())
+                .data(authService.login(authRequest))
                 .build();
     }
 }
