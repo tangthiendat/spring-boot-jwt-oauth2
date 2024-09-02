@@ -1,10 +1,7 @@
 package com.ttdat.springbootjwtoauth2.util;
 
-import com.ttdat.springbootjwtoauth2.entity.Role;
-import com.ttdat.springbootjwtoauth2.entity.User;
-import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldDefaults;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -15,28 +12,43 @@ import org.springframework.stereotype.Component;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class JwtUtils {
 
-    ApplicationContext applicationContext;
+    private final ApplicationContext applicationContext;
 
-    public String generateAccessToken(User user) {
+    @Value("${application.security.jwt.access-token-validity-in-seconds}")
+    private long accessTokenDurationInSeconds;
+
+    @Value("${application.security.jwt.refresh-token-validity-in-seconds}")
+    private long refreshTokenDurationInSeconds;
+
+    public String generateAccessToken(UserDetails userDetails) {
+        return generateJwtToken(userDetails, new HashMap<>(), accessTokenDurationInSeconds);
+    }
+
+    public String generateRefreshToken(UserDetails userDetails) {
+        return generateJwtToken(userDetails, new HashMap<>(), refreshTokenDurationInSeconds);
+    }
+
+    private String generateJwtToken(UserDetails userDetails,
+                                    Map<String, Object> extraClaims,
+                                    long tokenDurationInSeconds){
         JwtEncoder jwtEncoder = applicationContext.getBean(JwtEncoder.class);
-        Set<String> userRoles = user.getRoles().stream().map(Role::getRoleName).collect(Collectors.toSet());
-        JwtClaimsSet claims = JwtClaimsSet.builder()
-                .subject(user.getUsername())
+        JwtClaimsSet claimsSet = JwtClaimsSet.builder()
+                .subject(userDetails.getUsername())
                 .issuedAt(Instant.now())
-                .expiresAt(Instant.now().plus(5, ChronoUnit.MINUTES))
-                .claim("fullName", user.getFullName())
-                .claim("role", userRoles)
+                .expiresAt(Instant.now().plus(tokenDurationInSeconds, ChronoUnit.SECONDS))
                 .build();
-        return jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
+        if(!extraClaims.isEmpty()){
+            claimsSet.getClaims().putAll(extraClaims);
+        }
+        return jwtEncoder.encode(JwtEncoderParameters.from(claimsSet)).getTokenValue();
     }
 
     public String getUsername(Jwt jwtToken) {

@@ -1,17 +1,17 @@
 package com.ttdat.springbootjwtoauth2.config;
 
-import lombok.AccessLevel;
-import lombok.Data;
-import lombok.experimental.FieldDefaults;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.validation.annotation.Validated;
 
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 
-@Data
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@Validated
 @ConfigurationProperties(prefix = "application.security.rsa")
-public class RSAKeyRecord {
-    RSAPrivateKey rsaPrivateKey;
-    RSAPublicKey rsaPublicKey;
+public record RSAKeyRecord(
+        @NotNull RSAPrivateKey rsaPrivateKey,
+        @NotNull RSAPublicKey rsaPublicKey
+) {
+
 }

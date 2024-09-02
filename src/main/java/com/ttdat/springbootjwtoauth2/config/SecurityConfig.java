@@ -78,13 +78,13 @@ public class SecurityConfig {
 
     @Bean
     public JwtDecoder jwtDecoder() {
-        return NimbusJwtDecoder.withPublicKey(rsaKeyRecord.getRsaPublicKey()).build();
+        return NimbusJwtDecoder.withPublicKey(rsaKeyRecord.rsaPublicKey()).build();
     }
 
     @Bean
     public JwtEncoder jwtEncoder() {
-        JWK jwk = new RSAKey.Builder(rsaKeyRecord.getRsaPublicKey())
-                .privateKey(rsaKeyRecord.getRsaPrivateKey())
+        JWK jwk = new RSAKey.Builder(rsaKeyRecord.rsaPublicKey())
+                .privateKey(rsaKeyRecord.rsaPrivateKey())
                 .build();
         JWKSource<SecurityContext> jwkSource = new ImmutableJWKSet<>(new JWKSet(jwk));
         return new NimbusJwtEncoder(jwkSource);

@@ -5,14 +5,12 @@ import com.ttdat.springbootjwtoauth2.dto.AuthRequest;
 import com.ttdat.springbootjwtoauth2.dto.AuthResponse;
 import com.ttdat.springbootjwtoauth2.dto.UserDTO;
 import com.ttdat.springbootjwtoauth2.service.AuthService;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -24,17 +22,17 @@ public class AuthController {
 
     @PostMapping("/register")
     public ApiResponse<UserDTO> register(@RequestBody UserDTO userDTO) {
-        return ApiResponse.<UserDTO>builder()
-                .status(HttpStatus.CREATED.value())
-                .data(authService.register(userDTO))
-                .build();
+        return authService.register(userDTO);
     }
 
     @PostMapping("/login")
-    public ApiResponse<AuthResponse> login(@RequestBody AuthRequest authRequest) {
-        return ApiResponse.<AuthResponse>builder()
-                .status(HttpStatus.OK.value())
-                .data(authService.login(authRequest))
-                .build();
+    public ApiResponse<AuthResponse> login(@RequestBody AuthRequest authRequest,
+                                           HttpServletResponse response) {
+        return authService.login(authRequest, response);
+    }
+
+    @PostMapping("/refresh-token")
+    public ApiResponse<AuthResponse> refreshToken(@CookieValue("refresh_token") String refreshToken) {
+        return authService.refreshToken(refreshToken);
     }
 }
